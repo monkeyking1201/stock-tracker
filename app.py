@@ -15,7 +15,7 @@ import yfinance as yf
 from google.oauth2.service_account import Credentials
 from PIL import Image
 
-st.set_page_config(page_title="核心資產與氣韻觀測", page_icon=None, layout="centered")
+st.set_page_config(page_title="核心資產與氣韻觀測", page_icon="💰", layout="centered")
 
 STOCKS = {"台積電": "2330.TW", "台達電": "2308.TW"}
 HWM_LOG_PATH = "hwm_log.csv"
