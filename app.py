@@ -195,17 +195,30 @@ def fetch_latest_prices(stock_map):
         price = None
         try:
             ticker = yf.Ticker(code)
+            # 方法1: fast_info.last_price
             try:
                 fi = ticker.fast_info
-                lp = fi.get("last_price") if hasattr(fi, "get") else fi["lastPrice"]
-                if lp:
+                lp = getattr(fi, "last_price", None)
+                if lp and float(lp) > 0:
                     price = float(lp)
             except Exception:
                 price = None
+            # 方法2: history 5日
             if price is None:
-                hist = ticker.history(period="5d")
-                if not hist.empty:
-                    price = float(hist["Close"].iloc[-1])
+                try:
+                    hist = ticker.history(period="5d")
+                    if not hist.empty:
+                        price = float(hist["Close"].iloc[-1])
+                except Exception:
+                    price = None
+            # 方法3: history 1個月
+            if price is None:
+                try:
+                    hist = ticker.history(period="1mo")
+                    if not hist.empty:
+                        price = float(hist["Close"].iloc[-1])
+                except Exception:
+                    price = None
         except Exception:
             price = None
         prices[name] = round(price, 2) if price is not None else None
@@ -392,7 +405,7 @@ with st.container(border=True, key="panel_zeroshare"):
 
 
 with st.container(border=True, key="panel_realized"):
-    st.markdown("<h3>歷史戰功存摘</h3>", unsafe_allow_html=True)
+    st.markdown("<h3>歷史戰功軌跡</h3>", unsafe_allow_html=True)
     realized_df = load_data(REALIZED_LOG_PATH, REALIZED_COLUMNS, sheet_tab=_GS_WORKSHEET_REALIZED)
     if not realized_df.empty:
         realized_df["已實現獲利金額"] = pd.to_numeric(
