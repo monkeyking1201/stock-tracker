@@ -18,10 +18,31 @@ from PIL import Image
 st.set_page_config(page_title="核心資產與氣韻觀測", page_icon="💰", layout="centered")
 
 STOCKS = {"台積電": "2330.TW", "台達電": "2308.TW"}
-HWM_LOG_PATH = "hwm_log.csv"
-REALIZED_LOG_PATH = "realized_profit.csv"
+HWM_LOG_PATH = "demo_hwm.csv"
+REALIZED_LOG_PATH = "demo_realized.csv"
 HWM_COLUMNS = ["日期", "本期未實現損益", "歷史最高損益HWM", "創高日期", "本期新增氣韻點數"]
 REALIZED_COLUMNS = ["結算日期", "標的", "已實現獲利金額"]
+
+# ── Demo 版：自動預填初始資料 ──────────────────────────────────────────────
+def _seed_demo_data():
+    """若 demo 檔案不存在或為空，自動填入體驗用初始資料。"""
+    import os
+    from datetime import date
+    # HWM 預設 100,000 元
+    if not os.path.exists(HWM_LOG_PATH) or os.path.getsize(HWM_LOG_PATH) < 10:
+        import pandas as pd
+        seed = pd.DataFrame([{
+            "日期": str(date.today()),
+            "本期未實現損益": 100000,
+            "歷史最高損益HWM": 100000,
+            "創高日期": str(date.today()),
+            "本期新增氣韻點數": 10000.0,
+        }])
+        seed.to_csv(HWM_LOG_PATH, index=False)
+
+_seed_demo_data()
+# ────────────────────────────────────────────────────────────────────────────
+
 
 BACKGROUND_IMAGE_URL = ""
 BACKGROUND_IMAGE_FILE = "background.png"
@@ -274,11 +295,8 @@ _GS_WORKSHEET_REALIZED = "戰功存摺"
 
 
 def _use_sheets() -> bool:
-    """判斷是否啟用 Google Sheets（需要在 secrets.toml 設定 gcp_service_account）。"""
-    try:
-        return "gcp_service_account" in st.secrets
-    except Exception:
-        return False
+    """Demo 版永遠使用本地 CSV，不連 Google Sheets。"""
+    return False
 
 
 @st.cache_resource
