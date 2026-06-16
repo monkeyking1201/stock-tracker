@@ -132,6 +132,39 @@ div[data-testid="stAlert"] {
 st.markdown("<style>" + _BASE_CSS.replace("__BG_IMAGE__", _bg_layer) + "</style>", unsafe_allow_html=True)
 
 
+
+
+
+
+def _make_app_icon_b64():
+    img = Image.new("RGB", (180, 180), color=(10, 10, 10))
+    from PIL import ImageDraw as _ID
+    draw = _ID.Draw(img)
+    draw.ellipse([8,   8,  172, 172], fill=(184, 134, 11))
+    draw.ellipse([22,  22, 158, 158], fill=(10,  10,  10))
+    draw.ellipse([36,  36, 144, 144], fill=(255, 215,   0))
+    draw.ellipse([60,  60, 120, 120], fill=(10,  10,  10))
+    draw.ellipse([76,  76, 104, 104], fill=(255, 215,   0))
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return base64.b64encode(buf.getvalue()).decode("ascii")
+
+
+_APP_ICON_B64 = _make_app_icon_b64()
+_ICON_JS = (
+    "<script>(function(){"
+    "var l=document.createElement('link');"
+    "l.rel='apple-touch-icon';"
+    "l.href='data:image/png;base64," + _APP_ICON_B64 + "';"
+    "document.head.appendChild(l);"
+    "var m=document.createElement('link');"
+    "m.rel='apple-touch-icon-precomposed';"
+    "m.href=l.href;document.head.appendChild(m);"
+    "})();</script>"
+)
+st.markdown(_ICON_JS, unsafe_allow_html=True)
+
+
 def _remove_bg(path, mode="black", threshold=30):
     """去除圖片背景，回傳 base64 data URI。
     mode="black": 移除黑色背景（R/G/B 全 < threshold）
