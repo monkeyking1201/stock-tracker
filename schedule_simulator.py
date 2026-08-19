@@ -29,6 +29,7 @@ html, body, .stApp {
   background: #F5F5F7 !important; color: #1d1d1f !important;
 }
 footer,#MainMenu,header { visibility:hidden !important; }
+[data-testid="collapsedControl"],[data-testid="stSidebarCollapsedControl"] { visibility:visible !important; display:flex !important; opacity:1 !important; }
 [data-testid="stToolbar"] { display:none !important; }
 .block-container { padding:0 1rem 4rem !important; max-width:100% !important; }
 
